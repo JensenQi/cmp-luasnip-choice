@@ -20,6 +20,7 @@ function M.setup(config)
             pattern = 'LuasnipChoiceNodeEnter',
             callback = function()
                 vim.schedule(function()
+                    vim.g.lua_snip_choice_done = false
                     cmp.complete({
                         config = {
                             sources = {
@@ -38,11 +39,12 @@ function M.source.new()
 end
 
 function M.source:is_available()
-    return require('luasnip.session').active_choice_node
+    return not vim.g.lua_snip_choice_done and require('luasnip').choice_active()
 end
 
 function M.source:execute(completion_item, callback)
     require('luasnip').set_choice(completion_item.index)
+    vim.g.lua_snip_choice_done = true
     callback(completion_item)
 end
 
